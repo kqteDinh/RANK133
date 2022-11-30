@@ -12,7 +12,7 @@ Color screenBackgroundColor = tan;
 Color genericTextFieldBackgroundColor = lightTan;
 Color genericTextFieldOutlineColor = tan;
 Color genericTextFieldHintTextColor = white;
-Color genericTextColor = white;
+Color genericTextColor = blacks;
 Color genericButtonColor = brown;
 Color genericIconsColor = lightTan;
 
