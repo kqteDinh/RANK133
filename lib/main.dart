@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:rank133/loginScreen.dart';
+import 'package:rank133/provider/provider.dart';
  
 void main() => runApp(const MyApp());
  
@@ -10,9 +12,14 @@ class MyApp extends StatelessWidget {
  
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: _title,
-      home: LoginScreen()
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: User())
+      ],
+      child: MaterialApp(
+        title: "RANKd Eats App",
+        home: LoginScreen()
+      ),
     );
   }
 }

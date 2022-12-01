@@ -1,7 +1,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:rank133/loginScreen.dart';
+import 'package:rank133/models/https_exception.dart';
+import 'package:rank133/provider/provider.dart';
 import 'Colors/registerColors.dart';
 
 //import 'package:open_gym_app/models/http_exceptioin.dart';
@@ -85,52 +88,51 @@ class _registerScreenState extends State<RegisterScreen> {
       ));
   }
 
-  // Future<void> _saveForm() async {
-  //   _form.currentState!.save();
-  //   if (!_form.currentState!.validate()) {
-  //     // Invalid!
-  //     return;
-  //   }
-  //   _form.currentState!.save();
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
-  //   print(_UserData.toString());
-  //   try{
-  //     await Provider.of<User>(context, listen: false)
-  //       .signup(
-  //         _UserData['firstName'],
-  //         _UserData['lastName'],
-  //         _UserData['email'],
-  //         _UserData['phoneNumber'],
-  //         _UserData['password']
-  //       );
-  //       if(_isLoading){
-  //         Navigator.of(context).pushNamed(TransitionScreen.routeName);
-  //       }
-  //       Navigator.of(context).pushNamed(registersuccessScreen.routeName);
-  //   } on HttpException catch (error){
-  //     var errorMessage = 'Authentication failed';
-  //       if(error.toString().contains('EMAIL_EXISTS')){
-  //         errorMessage = 'This email is already in use.';
-  //       }
-  //       else if(error.toString().contains('INVALID_EMAIL') || error.toString().contains('INVALID PASSWORD')){
-  //         errorMessage = 'This is not a valid email address or password';
-  //       }
-  //       else if(error.toString().contains('WEAK_PASSWORD')){
-  //           errorMessage = 'This password is too weak';
-  //       }
-  //       else if(error.toString().contains('EMAIL_NOT_FOUND')){
-  //         errorMessage = 'Could not find a user with that email';
-  //       }
-  //       _showErrorDialog(errorMessage);
-  //     } catch(error){
-  //       const errorMessage= 'Could not authenticate you. Please try again later.';
-  //     }
-  //   setState(() {
-  //     _isLoading = false;
-  //   });
-  // }
+  Future<void> _saveForm() async {
+    _form.currentState!.save();
+    if (!_form.currentState!.validate()) {
+      // Invalid!
+      return;
+    }
+    _form.currentState!.save();
+    setState(() {
+      _isLoading = true;
+    });
+    print(_UserData.toString());
+    try{
+      await Provider.of<User>(context, listen: false)
+        .signup(
+          _UserData['firstName'],
+          _UserData['lastName'],
+          _UserData['email'],
+          _UserData['password']
+        );
+        if(_isLoading){
+          // Navigator.of(context).pushNamed(TransitionScreen.routeName);
+        }
+        Navigator.of(context).pushNamed(LoginScreen.routeName);
+    } on HttpException catch (error){
+      var errorMessage = 'Authentication failed';
+        if(error.toString().contains('EMAIL_EXISTS')){
+          errorMessage = 'This email is already in use.';
+        }
+        else if(error.toString().contains('INVALID_EMAIL') || error.toString().contains('INVALID PASSWORD')){
+          errorMessage = 'This is not a valid email address or password';
+        }
+        else if(error.toString().contains('WEAK_PASSWORD')){
+            errorMessage = 'This password is too weak';
+        }
+        else if(error.toString().contains('EMAIL_NOT_FOUND')){
+          errorMessage = 'Could not find a user with that email';
+        }
+        _showErrorDialog(errorMessage);
+      } catch(error){
+        const errorMessage= 'Could not authenticate you. Please try again later.';
+      }
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -377,7 +379,7 @@ class _registerScreenState extends State<RegisterScreen> {
                               ),
                             ),
                             onPressed: () {
-                              // _saveForm();
+                              _saveForm();
                             },
                             child: const Text(
                               'Register Now',

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:rank133/provider/provider.dart';
 import 'Colors/registerColors.dart';
 import 'RegisterScreen.dart';
-// import 'package:open_gym_app/models/http_exceptioin.dart';
-
-
+import 'models/https_exception.dart';
 class LoginScreen extends StatefulWidget {
   static const routeName = '/logIn';
   @override
@@ -135,44 +135,44 @@ void _showErrorDialog(String message){
       ));
   }
 
-// Future<void> _saveForm() async {
-//     _form.currentState!.save();
-//     if (!_form.currentState!.validate()) {
-//       // Invalid!
-//       return;
-//     }
-//     _form.currentState!.save();
-//     setState(() {
-//       _isLoading = true;
-//     });
-//     print(_UserData.toString());
-//     // try{
-//     //   // await Provider.of<User>(context, listen: false)
-//     //   //   .logIn(_UserData['email'], _UserData['password']);
-//     //   // Navigator.of(context).pushNamed(WelcomeScreen.routeName);
-//     // }
-//     // on HttpException catch(error){
-//     //   var errorMessage = 'Authentication failed';
-//     //   if(error.toString().contains('EMAIL_EXISTS')){
-//     //     errorMessage = 'This email is already in use.';
-//     //   }
-//     //   else if(error.toString().contains('INVALID_EMAIL')){
-//     //     errorMessage = 'This is not a valid email address.';
-//     //   }
-//     //   else if(error.toString().contains('WEAK_PASSWORD')){
-//     //     errorMessage = 'This password is too weak';
-//     //   }
-//     //   else if(error.toString().contains('EMAIL_NOT_FOUND') || error.toString().contains('INVALID_PASSWORD')){
-//     //     errorMessage = 'Could not find a user with that email or password';
-//     //   }
-//     //   _showErrorDialog(errorMessage);
-//     // } catch(error){
-//     //   const errorMessage = 'Could not authenticate you. Please try again later.';
-//     // }
-//     setState(() {
-//       _isLoading = false;
-//     });
-//   }
+Future<void> _saveForm() async {
+    _form.currentState!.save();
+    if (!_form.currentState!.validate()) {
+      // Invalid!
+      return;
+    }
+    _form.currentState!.save();
+    setState(() {
+      _isLoading = true;
+    });
+    print(_UserData.toString());
+    try{
+      await Provider.of<User>(context, listen: false)
+        .logIn(_UserData['email'], _UserData['password']);
+        Navigator.of(context).pushNamed(RegisterScreen.routeName);
+    }
+    on HttpException catch(error){
+      var errorMessage = 'Authentication failed';
+      if(error.toString().contains('EMAIL_EXISTS')){
+        errorMessage = 'This email is already in use.';
+      }
+      else if(error.toString().contains('INVALID_EMAIL')){
+        errorMessage = 'This is not a valid email address.';
+      }
+      else if(error.toString().contains('WEAK_PASSWORD')){
+        errorMessage = 'This password is too weak';
+      }
+      else if(error.toString().contains('EMAIL_NOT_FOUND') || error.toString().contains('INVALID_PASSWORD')){
+        errorMessage = 'Could not find a user with that email or password';
+      }
+      _showErrorDialog(errorMessage);
+    } catch(error){
+      const errorMessage = 'Could not authenticate you. Please try again later.';
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -201,7 +201,7 @@ void _showErrorDialog(String message){
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        'RANKd',
+                        'RANKd Eats',
                         style: TextStyle(
                             color: titleColor,
                             fontSize: 40,
@@ -303,7 +303,7 @@ void _showErrorDialog(String message){
                                 ),
                               ),
                               onPressed: () {
-                                // _saveForm();
+                                _saveForm();
                               },
                               child: Text(
                                 'Log In',
