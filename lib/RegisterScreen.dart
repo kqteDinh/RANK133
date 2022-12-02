@@ -2,10 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:rank133/homeScreen.dart';
 import 'package:rank133/loginScreen.dart';
 import 'package:rank133/models/https_exception.dart';
-import 'package:rank133/provider/provider.dart';
-import 'Colors/registerColors.dart';
+import 'package:rank133/provider/user.dart';
+import 'Colors/appColors.dart';
 
 //import 'package:open_gym_app/models/http_exceptioin.dart';
 //import 'package:open_gym_app/providers/User.dart';
@@ -110,7 +111,7 @@ class _registerScreenState extends State<RegisterScreen> {
         if(_isLoading){
           // Navigator.of(context).pushNamed(TransitionScreen.routeName);
         }
-        Navigator.of(context).pushNamed(LoginScreen.routeName);
+        Navigator.of(context).pushNamed(HomeScreen.routeName);
     } on HttpException catch (error){
       var errorMessage = 'Authentication failed';
         if(error.toString().contains('EMAIL_EXISTS')){

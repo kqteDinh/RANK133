@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:rank133/provider/provider.dart';
-import 'Colors/registerColors.dart';
+import 'package:rank133/homeScreen.dart';
+import 'package:rank133/provider/user.dart';
+import 'Colors/appColors.dart';
 import 'RegisterScreen.dart';
 import 'models/https_exception.dart';
 class LoginScreen extends StatefulWidget {
@@ -149,7 +150,7 @@ Future<void> _saveForm() async {
     try{
       await Provider.of<User>(context, listen: false)
         .logIn(_UserData['email'], _UserData['password']);
-        Navigator.of(context).pushNamed(RegisterScreen.routeName);
+      Navigator.of(context).pushNamed(HomeScreen.routeName);
     }
     on HttpException catch(error){
       var errorMessage = 'Authentication failed';

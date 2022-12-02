@@ -16,6 +16,8 @@ Color genericTextColor = blacks;
 Color genericButtonColor = brown;
 Color genericIconsColor = lightTan;
 
+Color genericAppBarColor = brown;
+Color genericAppBarColorText = brown;
 Color iconsColor = brown;
 
 Color signUpTextColor = brown;
