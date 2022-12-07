@@ -1,9 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rank133/Colors/appColors.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({Key? key, User? user}) : super(key: key);
   
   @override
    @override
