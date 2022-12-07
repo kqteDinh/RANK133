@@ -13,7 +13,27 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-@override
+  int _selectedIndex = 0;
+  static const TextStyle optionStyle =
+  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const List<Widget> _widgetOptions = <Widget>[
+    Text(
+      'Index 0: Home',
+      style: optionStyle,
+    ),
+    Text(
+      'Index 1: Business',
+      style: optionStyle,
+    ),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -36,8 +56,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
 
       ),
-      body: Scaffold(
-        backgroundColor: screenBackgroundColor,
+      body: Center(
+        // backgroundColor: screenBackgroundColor,
+        child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: genericAppBarColor,
@@ -51,7 +72,11 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.person),
             label: 'Profile',
           ),
-      ]),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800], //TODO: CHANGE COLOR 
+        onTap: _onItemTapped,
+      ),
     );
   }
 }
