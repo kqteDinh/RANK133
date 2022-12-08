@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:rank133/Colors/Colors.dart';
 import 'package:rank133/Colors/appColors.dart';
+import 'package:rxdart/rxdart.dart';
 
 class RestaurantList extends StatefulWidget {
   static const routeName = '/restaurants';
@@ -24,12 +25,19 @@ List<dynamic> reviews = [];
 
 List<Widget> _getNumberOfStars(int rating) {
   List<Widget> stars = <Widget>[];
+  int numOfEmptyStars = 5 - rating;
   stars.add(
     SizedBox(width: 10),
   );
   for (int i = 0; i < rating; i++) {
     stars.add(Icon(
       Icons.star,
+      color: iconsColor,
+    ));
+  }
+  for (int i = 0; i < numOfEmptyStars; i++) {
+    stars.add(Icon(
+      Icons.star_border,
       color: iconsColor,
     ));
   }
@@ -54,9 +62,21 @@ List<Widget> _getReviews(List<dynamic> list) {
   return reviews;
 }
 
+
+
 class _RestaurantListState extends State<RestaurantList> {
-  final CollectionReference _cafes =
-      FirebaseFirestore.instance.collection('CafeName');
+  final Stream<QuerySnapshot<Map<String, dynamic>>> _cafes =
+      FirebaseFirestore.instance.collection('CafeName').snapshots();
+  final  Stream<QuerySnapshot<Map<String, dynamic>>> _restaurants =
+      FirebaseFirestore.instance.collection('RestaurantName').snapshots();
+
+
+
+Stream<QuerySnapshot> getData() {
+  return MergeStream([_cafes, _restaurants]);
+}
+
+
   @override
   Widget build(BuildContext context) {
     // List <Widget> stars = <Widget>[];
@@ -64,7 +84,7 @@ class _RestaurantListState extends State<RestaurantList> {
     return Scaffold(
       backgroundColor: screenBackgroundColor,
       body: StreamBuilder(
-        stream: _cafes.snapshots(),
+        stream: _cafes,
         builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
           if (streamSnapshot.hasData) {
             return ListView.builder(
@@ -114,7 +134,9 @@ class _RestaurantListState extends State<RestaurantList> {
             child: CircularProgressIndicator(),
           );
         },
+        
       ),
+      
     );
   }
 }
