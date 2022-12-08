@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final CollectionReference _cafes = FirebaseFirestore.instance.collection("CafeName");
   int _selectedIndex = 0;
   static const List<Widget> _widgetOptions = <Widget>[
-    RestrauntList(),
+    RestaurantList(),
     ProfileScreen(),
   ];
 
