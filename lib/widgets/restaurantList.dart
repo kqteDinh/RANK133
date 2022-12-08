@@ -6,6 +6,7 @@ import 'package:rank133/Colors/Colors.dart';
 import 'package:rank133/Colors/appColors.dart';
 import 'package:rxdart/rxdart.dart';
 
+
 class RestaurantList extends StatefulWidget {
   static const routeName = '/restaurants';
   const RestaurantList({Key? key, User? user}) : super(key: key);
@@ -13,6 +14,9 @@ class RestaurantList extends StatefulWidget {
   @override
   _RestaurantListState createState() => _RestaurantListState();
 }
+FirebaseFirestore db = FirebaseFirestore.instance;
+final cafes = db.collection("CafeName");
+
 
 String name = "";
 String address = "";
