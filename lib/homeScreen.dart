@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rank133/Colors/appColors.dart';
 import 'package:rank133/profile.dart';
+import 'package:rank133/searchScreen.dart';
 import 'package:rank133/widgets/restaurantList.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -15,8 +16,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final CollectionReference _cafes =
-      FirebaseFirestore.instance.collection("CafeName");
   int _selectedIndex = 0;
   static const List<Widget> _widgetOptions = <Widget>[
     RestaurantList(),
@@ -45,7 +44,12 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.search),
             color: iconsColor,
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SearchScreen()),
+              );
+            },
           )
         ],
       ),
