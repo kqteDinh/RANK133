@@ -50,8 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: Center(
-        child: _widgetOptions.elementAt(
-          _selectedIndex),
+        child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: genericAppBarColor,
@@ -67,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: iconsColor, 
+        selectedItemColor: iconsColor,
         onTap: _onItemTapped,
       ),
     );

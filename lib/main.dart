@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:rank133/RegisterScreen.dart';
 import 'package:rank133/homeScreen.dart';
 import 'package:rank133/loginScreen.dart';
-import 'package:rank133/models/restaurant.dart';
 import 'package:rank133/provider/user.dart';
 
  

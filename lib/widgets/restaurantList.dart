@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:rank133/Colors/Colors.dart';
 import 'package:rank133/Colors/appColors.dart';
 
+
 class RestaurantList extends StatefulWidget {
   static const routeName = '/restaurants';
   const RestaurantList({Key? key, User? user}) : super(key: key);
@@ -12,6 +13,9 @@ class RestaurantList extends StatefulWidget {
   @override
   _RestaurantListState createState() => _RestaurantListState();
 }
+FirebaseFirestore db = FirebaseFirestore.instance;
+final cafes = db.collection("CafeName");
+
 
 String name = "";
 String address = "";
@@ -54,9 +58,29 @@ List<Widget> _getReviews(List<dynamic> list) {
   return reviews;
 }
 
+
+
 class _RestaurantListState extends State<RestaurantList> {
-  final CollectionReference _cafes =
-      FirebaseFirestore.instance.collection('CafeName');
+  final Stream<QuerySnapshot<Map<String, dynamic>>> _cafes =
+      FirebaseFirestore.instance.collection('CafeName').snapshots();
+  final  Stream<QuerySnapshot<Map<String, dynamic>>> _restaurants =
+      FirebaseFirestore.instance.collection('RestaurantName').snapshots();
+
+      
+// final Stream<DocumentSnapshot> user = Firestore.instance
+//         .collection("users")
+//         .snapshots();
+
+//     final Stream<QuerySnapshot> cards =
+//         Firestore.instance.collection("cards").snapshots();
+
+    // CombineLatestStream.list([user, cards]).listen((data) {
+    //   add(LoadedHomeEvent(
+    //     data.elementAt(0),
+    //     data.elementAt(1),
+    //   ));
+    // });
+
   @override
   Widget build(BuildContext context) {
     // List <Widget> stars = <Widget>[];
@@ -64,7 +88,7 @@ class _RestaurantListState extends State<RestaurantList> {
     return Scaffold(
       backgroundColor: screenBackgroundColor,
       body: StreamBuilder(
-        stream: _cafes.snapshots(),
+        stream: _cafes,
         builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
           if (streamSnapshot.hasData) {
             return ListView.builder(
@@ -114,7 +138,9 @@ class _RestaurantListState extends State<RestaurantList> {
             child: CircularProgressIndicator(),
           );
         },
+        
       ),
+      
     );
   }
 }
