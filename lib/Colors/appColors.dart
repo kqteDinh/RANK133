@@ -16,7 +16,7 @@ Color genericTextColor = blacks;
 Color genericButtonColor = brown;
 Color genericIconsColor = lightTan;
 
-Color genericAppBarColor = brown;
+Color genericAppBarColor = tan;
 Color genericAppBarColorText = brown;
 Color iconsColor = brown;
 
