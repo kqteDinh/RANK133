@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:rank133/Colors/appColors.dart';
+import 'package:rank133/restrauntScreen.dart';
 
 class RestrauntList extends StatefulWidget {
   static const routeName = '/home';
@@ -17,7 +18,6 @@ class _RestrauntListState extends State<RestrauntList> {
   final CollectionReference _cafes = FirebaseFirestore.instance.collection('CafeName');
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       body: StreamBuilder(
         // backgroundColor: screenBackgroundColor,
@@ -35,8 +35,37 @@ class _RestrauntListState extends State<RestrauntList> {
                     leading: Image.network(documentSnapshot["Images"][0]),
                     title: Text(documentSnapshot["Name"]),
                     subtitle: Text(documentSnapshot["Address"]),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => RestrauntScreen()),
+                      );
+                    },
                   ),
                 );
+      //           return Center(
+      //             child: Card(
+      //             child: Column(
+      //               mainAxisSize: MainAxisSize.min,
+      //               children: <Widget>[
+      //               Card(
+      //                 margin: const EdgeInsets.all(5),
+      //                 child: ListTile(
+      //                 leading: Image.network(documentSnapshot["Images"][0]),
+      //                 title: Text(documentSnapshot["Name"]),
+      //                 subtitle: Text(documentSnapshot["Address"]),
+      //                 ),
+      //               ),
+      //               Row(
+      //                 mainAxisAlignment: MainAxisAlignment.end,
+      //                 children: <Widget>[
+      //                   Icon(Icons.star)
+      //                 ],
+      //                ),
+      //     ]
+      //   ),
+      // ),
+    // );
               }
             );
           }
