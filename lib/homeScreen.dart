@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rank133/Colors/appColors.dart';
+import 'package:rank133/profile.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
@@ -14,17 +15,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
     Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
-    Text(
       'Index 1: Business',
-      style: optionStyle,
     ),
+    ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
