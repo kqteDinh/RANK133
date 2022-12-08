@@ -5,9 +5,14 @@ import 'package:rank133/Colors/appColors.dart';
 import 'package:rank133/profile.dart';
 import 'package:rank133/widgets/restaurantList.dart';
 
+
+
 class RestrauntScreen extends StatefulWidget {
+  // final String documentId;
+
+  RestrauntScreen(AsyncSnapshot<QuerySnapshot> streamSnapshot);
   // static const routeName = '/home';
-  const RestrauntScreen({Key? key, User? user}) : super(key: key);
+  // const RestrauntScreen({Key? key, User? user}) : super(key: key);
   @override
  _RestrauntScreenState createState() => _RestrauntScreenState();
 
@@ -17,9 +22,6 @@ class RestrauntScreen extends StatefulWidget {
 
 class _RestrauntScreenState extends State<RestrauntScreen> {
   final CollectionReference _cafes = FirebaseFirestore.instance.collection("CafeName");
-  int _selectedIndex = 0;
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

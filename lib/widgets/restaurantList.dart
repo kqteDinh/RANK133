@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:rank133/Colors/Colors.dart';
 import 'package:rank133/Colors/appColors.dart';
 import 'package:rank133/restrauntScreen.dart';
 
@@ -14,10 +15,29 @@ class RestrauntList extends StatefulWidget {
 
 }
 
+
+
 class _RestrauntListState extends State<RestrauntList> {
   final CollectionReference _cafes = FirebaseFirestore.instance.collection('CafeName');
+
   @override
   Widget build(BuildContext context) {
+
+  // List <Widget> stars = <Widget>[];
+
+  List<Widget> _getNumberOfStars(int rating){
+    List <Widget> stars = <Widget>[];
+    for(int i=0;i<rating;i++)
+    {
+        stars.add(
+          Icon(
+            Icons.star,
+            color: iconsColor,
+          ));
+    }
+    return stars;
+  }
+
     return Scaffold(
       body: StreamBuilder(
         // backgroundColor: screenBackgroundColor,
@@ -31,18 +51,28 @@ class _RestrauntListState extends State<RestrauntList> {
                 final DocumentSnapshot documentSnapshot = streamSnapshot.data!.docs[index];
                 return Card(
                   margin: const EdgeInsets.all(5),
-                  child: ListTile(
-                    leading: Image.network(documentSnapshot["Images"][0]),
-                    title: Text(documentSnapshot["Name"]),
-                    subtitle: Text(documentSnapshot["Address"]),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => RestrauntScreen()),
-                      );
-                    },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,                    
+                    children: <Widget>[
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => RestrauntScreen(documentSnapshot)),
+                          );
+                        },
+                      leading: Image.network(documentSnapshot["Images"][0]),
+                      title: Text(documentSnapshot["Name"]),
+                      subtitle: Text(documentSnapshot["Address"]),
+                      ),
+                      Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: _getNumberOfStars(documentSnapshot["Ratings"]),
+                      ),
+                    ],
                   ),
                 );
+
       //           return Center(
       //             child: Card(
       //             child: Column(
@@ -66,7 +96,7 @@ class _RestrauntListState extends State<RestrauntList> {
       //   ),
       // ),
     // );
-              }
+              },
             );
           }
           return const Center(
