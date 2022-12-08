@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:rank133/Colors/Colors.dart';
 import 'package:rank133/Colors/appColors.dart';
+import 'package:rxdart/rxdart.dart';
 
 
 class RestaurantList extends StatefulWidget {
@@ -28,12 +29,19 @@ List<dynamic> reviews = [];
 
 List<Widget> _getNumberOfStars(int rating) {
   List<Widget> stars = <Widget>[];
+  int numOfEmptyStars = 5 - rating;
   stars.add(
     SizedBox(width: 10),
   );
   for (int i = 0; i < rating; i++) {
     stars.add(Icon(
       Icons.star,
+      color: iconsColor,
+    ));
+  }
+  for (int i = 0; i < numOfEmptyStars; i++) {
+    stars.add(Icon(
+      Icons.star_border,
       color: iconsColor,
     ));
   }
@@ -66,20 +74,12 @@ class _RestaurantListState extends State<RestaurantList> {
   final  Stream<QuerySnapshot<Map<String, dynamic>>> _restaurants =
       FirebaseFirestore.instance.collection('RestaurantName').snapshots();
 
-      
-// final Stream<DocumentSnapshot> user = Firestore.instance
-//         .collection("users")
-//         .snapshots();
 
-//     final Stream<QuerySnapshot> cards =
-//         Firestore.instance.collection("cards").snapshots();
 
-    // CombineLatestStream.list([user, cards]).listen((data) {
-    //   add(LoadedHomeEvent(
-    //     data.elementAt(0),
-    //     data.elementAt(1),
-    //   ));
-    // });
+Stream<QuerySnapshot> getData() {
+  return MergeStream([_cafes, _restaurants]);
+}
+
 
   @override
   Widget build(BuildContext context) {
