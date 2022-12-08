@@ -6,18 +6,16 @@ import 'package:rank133/Colors/Colors.dart';
 import 'package:rank133/Colors/appColors.dart';
 import 'package:rank133/restrauntScreen.dart';
 
-class RestrauntList extends StatefulWidget {
+class RestaurantList extends StatefulWidget {
   static const routeName = '/home';
-  const RestrauntList({Key? key, User? user}) : super(key: key);
+  const RestaurantList({Key? key, User? user}) : super(key: key);
   
   @override
-  _RestrauntListState createState() => _RestrauntListState();
+  _RestaurantListState createState() => _RestaurantListState();
 
 }
 
-
-
-class _RestrauntListState extends State<RestrauntList> {
+class _RestaurantListState extends State<RestaurantList> {
   final CollectionReference _cafes = FirebaseFirestore.instance.collection('CafeName');
 
   @override
