@@ -8,17 +8,15 @@ import 'package:rank133/widgets/restaurantList.dart';
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
   const HomeScreen({Key? key, User? user}) : super(key: key);
-  
-  @override
-   @override
-  _HomeScreenState createState() => _HomeScreenState();
 
+  @override
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-
-
 class _HomeScreenState extends State<HomeScreen> {
-  final CollectionReference _cafes = FirebaseFirestore.instance.collection("CafeName");
+  final CollectionReference _cafes =
+      FirebaseFirestore.instance.collection("CafeName");
   int _selectedIndex = 0;
   static const List<Widget> _widgetOptions = <Widget>[
     RestaurantList(),
@@ -41,26 +39,23 @@ class _HomeScreenState extends State<HomeScreen> {
           style: TextStyle(
             color: Colors.black54,
           ),
-          ),
+        ),
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
             color: iconsColor,
-            onPressed: (){
-                
-            },
-            )
+            onPressed: () {},
+          )
         ],
-
       ),
       body: Center(
-        // backgroundColor: screenBackgroundColor,
-        child: _widgetOptions.elementAt(_selectedIndex),
+        child: _widgetOptions.elementAt(
+          _selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: genericAppBarColor,
-        items: const<BottomNavigationBarItem>[
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: "Home",
@@ -72,10 +67,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: iconsColor, //TODO: CHANGE COLOR 
+        selectedItemColor: iconsColor, 
         onTap: _onItemTapped,
       ),
     );
   }
 }
-

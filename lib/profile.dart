@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:rank133/Colors/appColors.dart';
 
 class ProfileScreen extends StatefulWidget {
-  static const routeName = '/home';
+  static const routeName = '/profile';
   const ProfileScreen({Key? key, User? user}) : super(key: key);
   
   @override
