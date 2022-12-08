@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rank133/RegisterScreen.dart';
@@ -10,7 +11,6 @@ void main() => runApp(const MyApp());
  
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
- 
   static const String _title = 'RANKd Eats App';
  
   @override

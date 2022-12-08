@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rank133/Colors/appColors.dart';
 import 'package:rank133/profile.dart';
+import 'package:rank133/widgets/restaurantList.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
@@ -13,12 +15,13 @@ class HomeScreen extends StatefulWidget {
 
 }
 
+
+
 class _HomeScreenState extends State<HomeScreen> {
+  final CollectionReference _cafes = FirebaseFirestore.instance.collection("CafeName");
   int _selectedIndex = 0;
   static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 1: Business',
-    ),
+    RestrauntList(),
     ProfileScreen(),
   ];
 
@@ -69,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800], //TODO: CHANGE COLOR 
+        selectedItemColor: iconsColor, //TODO: CHANGE COLOR 
         onTap: _onItemTapped,
       ),
     );
