@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:rank133/Colors/Colors.dart';
 import 'package:rank133/Colors/appColors.dart';
+import 'package:rank133/profile.dart';
 import 'package:rxdart/rxdart.dart';
 
 class RestaurantList extends StatefulWidget {
@@ -15,6 +16,7 @@ class RestaurantList extends StatefulWidget {
 }
 
 FirebaseFirestore db = FirebaseFirestore.instance;
+FirebaseAuth auth = FirebaseAuth.instance;
 final restaurantDatabase = db.collection("RestaurantName");
 String name = "";
 String address = "";
@@ -68,6 +70,18 @@ List<Widget> _getReviews(List<dynamic> list) {
   return reviews;
 }
 
+_updateFavs(String id) async {
+  DocumentSnapshot user = await usersDatabase.doc(auth.currentUser!.uid).get();
+  List favs = user.get("Favorites");
+  if(favs.contains(id)) favs.remove(id);
+  else favs.add(id);
+  usersDatabase.doc(auth.currentUser!.uid).set({"Favorites": favs});
+}
+
+Future<DocumentSnapshot> _getUser(String id) {
+  return usersDatabase.doc(auth.currentUser!.uid).get();
+}
+
 class _RestaurantListState extends State<RestaurantList> {
   // final Stream<QuerySnapshot<Map<String, dynamic>>> _cafes =
   //     FirebaseFirestore.instance.collection('CafeName').snapshots();
@@ -104,6 +118,37 @@ class _RestaurantListState extends State<RestaurantList> {
                         ),
                         title: Text(documentSnapshot["Name"]),
                         subtitle: Text(documentSnapshot["Address"]),
+                        trailing: IconButton(
+                          icon: FutureBuilder(
+                            future: _getUser(auth.currentUser!.uid),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return Icon(Icons.favorite_border);
+                              }
+                              if (snapshot.data != null) {
+                                DocumentSnapshot user = snapshot.data as DocumentSnapshot;
+                                List favs = user.get("Favorites");
+                                if(favs.contains(documentSnapshot.id)){
+                                  return Icon(Icons.favorite, color: Colors.pink,);
+                                }
+                                else return Icon(Icons.favorite_border);
+                              }
+                              else{
+                                return Icon(Icons.favorite_border);
+                              }
+                            },
+                          ),
+                          onPressed: () async{
+                            DocumentSnapshot user = await usersDatabase.doc(auth.currentUser!.uid).get();
+                            List favs = user.get("Favorites");
+                            if(favs.contains(documentSnapshot.id)) favs.remove(documentSnapshot.id);
+                            else favs.add(documentSnapshot.id);
+                            usersDatabase.doc(auth.currentUser!.uid).set({"Favorites": favs});
+                            setState(() {
+                              // Call setState to refresh the page.
+                            });
+                          }
+                        ),
                         onTap: () {
                           name = documentSnapshot["Name"];
                           address = documentSnapshot["Address"];
@@ -139,6 +184,7 @@ class _RestaurantListState extends State<RestaurantList> {
       ),
     );
   }
+  
 }
 
 class RestaurantDetailScreen extends StatelessWidget {
