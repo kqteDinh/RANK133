@@ -40,18 +40,20 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            color: iconsColor,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SearchScreen()),
-              );
-            },
-          )
-        ],
+        actions: _getSearchButton()
+        // actions: [
+          
+        //   IconButton(
+        //     icon: const Icon(Icons.search),
+        //     color: iconsColor,
+        //     onPressed: () {
+        //       Navigator.push(
+        //         context,
+        //         MaterialPageRoute(builder: (context) => const SearchScreen()),
+        //       );
+        //     },
+        //   )
+        // ],
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
@@ -74,5 +76,26 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: _onItemTapped,
       ),
     );
+  }
+  
+  _getSearchButton() {
+    List<Widget> actions = [];
+    if(_selectedIndex==0){
+      actions.add(
+        IconButton(
+          icon: const Icon(Icons.search),
+          color: iconsColor,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SearchScreen()),
+            );
+          },
+        )
+      );
+    }
+
+    return actions;
+      
   }
 }
