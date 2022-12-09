@@ -1,12 +1,18 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
-import 'package:rank133/homeScreen.dart';
+// import 'package:provider/provider.dart';
+// import 'package:rank133/homeScreen.dart';
 import 'package:rank133/loginScreen.dart';
-import 'package:rank133/models/https_exception.dart';
-import 'package:rank133/provider/user.dart';
+// import 'package:rank133/models/https_exception.dart';
+// import 'package:rank133/provider/user.dart';
 import 'Colors/appColors.dart';
+import 'package:rank133/fire_auth.dart';
+
+import 'homeScreen.dart';
+
 
 //import 'package:open_gym_app/models/http_exceptioin.dart';
 //import 'package:open_gym_app/providers/User.dart';
@@ -18,6 +24,10 @@ class RegisterScreen extends StatefulWidget {
   @override
   _registerScreenState createState() => _registerScreenState();
 }
+
+FirebaseFirestore db = FirebaseFirestore.instance;
+final usersDatabase = db.collection("users");
+
 
 Widget buildLoginButton(BuildContext context) {
   return GestureDetector(
@@ -57,6 +67,7 @@ class _registerScreenState extends State<RegisterScreen> {
   final GlobalKey<FormState> _form = GlobalKey();
   var _isLoading = false;
   final _passwordController = TextEditingController();
+  
 
   Map<String, String> _UserData = {
     'firstName': '',
@@ -99,37 +110,20 @@ class _registerScreenState extends State<RegisterScreen> {
     setState(() {
       _isLoading = true;
     });
-    print(_UserData.toString());
-    try{
-      await Provider.of<User>(context, listen: false)
-        .signup(
-          _UserData['firstName'],
-          _UserData['lastName'],
-          _UserData['email'],
-          _UserData['password']
-        );
-        if(_isLoading){
-          // Navigator.of(context).pushNamed(TransitionScreen.routeName);
-        }
-        Navigator.of(context).pushNamed(HomeScreen.routeName);
-    } on HttpException catch (error){
-      var errorMessage = 'Authentication failed';
-        if(error.toString().contains('EMAIL_EXISTS')){
-          errorMessage = 'This email is already in use.';
-        }
-        else if(error.toString().contains('INVALID_EMAIL') || error.toString().contains('INVALID PASSWORD')){
-          errorMessage = 'This is not a valid email address or password';
-        }
-        else if(error.toString().contains('WEAK_PASSWORD')){
-            errorMessage = 'This password is too weak';
-        }
-        else if(error.toString().contains('EMAIL_NOT_FOUND')){
-          errorMessage = 'Could not find a user with that email';
-        }
-        _showErrorDialog(errorMessage);
-      } catch(error){
-        const errorMessage= 'Could not authenticate you. Please try again later.';
-      }
+    
+    User? user = await FireAuth.registerUsingEmailPassword(email: _UserData['email']!, name: _UserData['firstName']! + " " + _UserData['lastName']!, password: _UserData['password']!);
+    if (user != null) {
+      Navigator.of(context)
+          .pushReplacement(
+        MaterialPageRoute(
+          builder: (context) =>
+              HomeScreen(),
+        ),
+      );
+    }
+
+    usersDatabase.doc(user!.uid).set({"Favorites": []});
+
     setState(() {
       _isLoading = false;
     });

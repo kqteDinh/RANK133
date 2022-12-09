@@ -72,7 +72,7 @@ class _RestaurantListState extends State<RestaurantList> {
   // final Stream<QuerySnapshot<Map<String, dynamic>>> _cafes =
   //     FirebaseFirestore.instance.collection('CafeName').snapshots();
   final Stream<QuerySnapshot<Map<String, dynamic>>> _restaurants =
-      FirebaseFirestore.instance.collection('RestaurantName').snapshots();
+      FirebaseFirestore.instance.collection('RestaurantName').orderBy("Name").snapshots();  // For some reason orderby removes the Bad State: field does not exist error
 
   // Stream<QuerySnapshot> getData() {
   //   return MergeStream([_cafes, _restaurants]);
@@ -111,7 +111,7 @@ class _RestaurantListState extends State<RestaurantList> {
                           rating = documentSnapshot["Ratings"];
                           hours = documentSnapshot["Hours"];
                           parking = documentSnapshot["Parking"];
-                          review = documentSnapshot["Reviews"][0];
+                          // review = documentSnapshot["Reviews"][0];
                           reviews = documentSnapshot["Reviews"];
                           doc_id = documentSnapshot.id;
                           Navigator.push(
