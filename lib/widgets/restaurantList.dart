@@ -192,6 +192,16 @@ class RestaurantDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: Icon(Icons.favorite_border),
+            onPressed:(() {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('The food place has been added to your favorites.')));
+            }
+            ),
+          ),
+        ],
         backgroundColor: genericAppBarColor,
         iconTheme: IconThemeData(
           color: iconsColor,
