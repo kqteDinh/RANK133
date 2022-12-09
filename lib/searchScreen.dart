@@ -338,7 +338,7 @@ class ReviewScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                     elevation: 2, backgroundColor: genericButtonColor),
                 onPressed: () {
-                  addReview(textController.text, context, );
+                  addReview(textController.text, context);
                 },
                 child: Text(
                   'Done',
