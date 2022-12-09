@@ -86,22 +86,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _form = GlobalKey<FormState>();
   var _isLoading = false;
 
-  Future<FirebaseApp> _initializeFirebase() async {
-    FirebaseApp firebaseApp = await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-    User? user = FirebaseAuth.instance.currentUser;
-    FirebaseAuth.instance.authStateChanges().listen((user) {
-      if (user != null) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
-        );
-      }
-    });
-    
-    return firebaseApp;
-  }
-
   Widget buildLogInButton(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,15 +121,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   _isLoading = false;
                 });
 
-                if (user != null) {
-                  Navigator.of(context)
-                      .pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          HomeScreen(),
-                    ),
-                  );
-                }
+                // if (user != null) {
+                //   Navigator.of(context)
+                //       .pushReplacement(
+                //     MaterialPageRoute(
+                //       builder: (context) =>
+                //           HomeScreen(),
+                //     ),
+                //   );
+                // }
               }
             },
             child: Text(
@@ -183,126 +167,116 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
-        child: FutureBuilder(
-          future: _initializeFirebase(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done){
-              return Form(
-                key: _form,
-                child: GestureDetector(
-                child: Stack(
-                  children: <Widget>[
-                    Container(
-                      height: double.infinity,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                            screenBackgroundColor,
-                            screenBackgroundColor
-                          ])),
-                      child: SingleChildScrollView(
-                        padding: EdgeInsets.symmetric(horizontal: 25, vertical: 120),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              'RANKd Eats',
-                              style: TextStyle(
-                                  color: titleColor,
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(height: 50),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Container(
-                                  alignment: Alignment.centerLeft,
-                                  decoration: BoxDecoration(
-                                    color: genericTextFieldBackgroundColor,
-                                    border: Border.all(
-                                      color: genericTextFieldOutlineColor,
-                                      width: 1,
-                                    ),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  height: 60,
-                                  child: TextFormField(
-                                    keyboardType: TextInputType.emailAddress,
-                                    controller: _emailTextController,
-                                    style: TextStyle(color: genericTextColor),
-                                    decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        contentPadding: EdgeInsets.only(top: 14),
-                                        prefixIcon: Icon(Icons.email, color: iconsColor),
-                                        hintText: 'Email'
-                                    ),
-                                    validator: (value) => Validator.validateEmail(
-                                      email: value,
-                                    ),
-                                    focusNode: _emailFocusNode,
-                                    onFieldSubmitted: (_) {
-                                      FocusScope.of(context)
-                                          .requestFocus(_passwordFocusNode);
-                                    }
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 20),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Container(
-                                  alignment: Alignment.centerLeft,
-                                  decoration: BoxDecoration(
-                                    color: genericTextFieldBackgroundColor,
-                                    border: Border.all(
-                                      color: genericTextFieldOutlineColor,
-                                      width: 1,
-                                    ),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  height: 60,
-                                  child: TextFormField(
-                                    obscureText: true,
-                                    style: TextStyle(color: genericTextColor),
-                                    controller: _passwordTextController,
-                                    decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        contentPadding: EdgeInsets.only(top: 14),
-                                        prefixIcon: Icon(Icons.lock, color: iconsColor),
-                                        hintText: 'Password'
-                                    ),
-                                    validator: (value) => Validator.validatePassword(
-                                      password: value,
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                            SizedBox(height: 10),
-                            
-                            buildLogInButton(context),
-                            SizedBox(height: 11),
-                            buildRegisterButton(context),
-                          ],
-                        ),
+        child: Form(
+          key: _form,
+          child: GestureDetector(
+          child: Stack(
+            children: <Widget>[
+              Container(
+                height: double.infinity,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                      screenBackgroundColor,
+                      screenBackgroundColor
+                    ])),
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: 25, vertical: 120),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        'RANKd Eats',
+                        style: TextStyle(
+                            color: titleColor,
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold),
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 50),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            decoration: BoxDecoration(
+                              color: genericTextFieldBackgroundColor,
+                              border: Border.all(
+                                color: genericTextFieldOutlineColor,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            height: 60,
+                            child: TextFormField(
+                              keyboardType: TextInputType.emailAddress,
+                              controller: _emailTextController,
+                              style: TextStyle(color: genericTextColor),
+                              decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.only(top: 14),
+                                  prefixIcon: Icon(Icons.email, color: iconsColor),
+                                  hintText: 'Email'
+                              ),
+                              validator: (value) => Validator.validateEmail(
+                                email: value,
+                              ),
+                              focusNode: _emailFocusNode,
+                              onFieldSubmitted: (_) {
+                                FocusScope.of(context)
+                                    .requestFocus(_passwordFocusNode);
+                              }
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            decoration: BoxDecoration(
+                              color: genericTextFieldBackgroundColor,
+                              border: Border.all(
+                                color: genericTextFieldOutlineColor,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            height: 60,
+                            child: TextFormField(
+                              obscureText: true,
+                              style: TextStyle(color: genericTextColor),
+                              controller: _passwordTextController,
+                              decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.only(top: 14),
+                                  prefixIcon: Icon(Icons.lock, color: iconsColor),
+                                  hintText: 'Password'
+                              ),
+                              validator: (value) => Validator.validatePassword(
+                                password: value,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      
+                      buildLogInButton(context),
+                      SizedBox(height: 11),
+                      buildRegisterButton(context),
+                    ],
+                  ),
                 ),
               ),
-            );
-            }
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        )
+            ],
+          ),
+        ),
+      )
     ),
     );
   }
