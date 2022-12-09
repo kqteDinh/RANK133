@@ -23,110 +23,119 @@ String doc_id = "";
 List<dynamic> reviews = [];
 
 class _SearchScreenState extends State<SearchScreen> {
+  final Stream<QuerySnapshot<Map<String, dynamic>>> _restaurants =
+      FirebaseFirestore.instance.collection('RestaurantName').snapshots();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            iconTheme: IconThemeData(
-              color: iconsColor,
+      appBar: AppBar(
+          iconTheme: IconThemeData(
+            color: iconsColor,
+          ),
+          backgroundColor: genericAppBarColor,
+          title: Card(
+            child: TextField(
+              decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.search), hintText: 'Search...'),
+              onChanged: (val) {
+                setState(() {
+                  searchName = val;
+                  address = val;
+                });
+              },
             ),
-            backgroundColor: genericAppBarColor,
-            title: Card(
-              child: TextField(
-                decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.search), hintText: 'Search...'),
-                onChanged: (val) {
-                  setState(() {
-                    searchName = val;
-                    address = val;
-                  });
-                },
-              ),
-            )),
-        body: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection('RestaurantName').snapshots(),
-          builder: (context, snapshots) {
-            return (snapshots.connectionState == ConnectionState.waiting)
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : ListView.builder(
-                    itemCount: snapshots.data!.docs.length,
-                    itemBuilder: (context, index) {
-                      var data = snapshots.data!.docs[index].data()
-                          as Map<String, dynamic>;
-                      if (searchName == "") {
-                        return Card(
-                          margin: const EdgeInsets.all(10),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              ListTile(
-                                leading: Image.network(
-                                  data['Images'][0],
-                                ),
-                                title: Text(data['Name']),
-                                subtitle: Text(data['Address']),
-                                onTap: () {
-                                  name = data['Name'];
-                                  address = data['Address'];
-                                  imageURL = data['Images'][0];
-                                  rating = data['Ratings'];
-                                  hours = data['Hours'];
-                                  parking = data['Parking'];
-                                  reviews = data['Reviews'];
-                                  // doc_id = data.id;
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            RestaurantDetailScreen()),
-                                  );
-                                },
-                              ),
-                            ],
+          )),
+      body: StreamBuilder(
+        stream: _restaurants,
+        builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+          if (streamSnapshot.hasData) {
+            return ListView.builder(
+              itemCount: streamSnapshot.data!.docs.length,
+              itemBuilder: (context, index) {
+                final DocumentSnapshot documentSnapshot =
+                    streamSnapshot.data!.docs[index];
+                if (searchName == "") {
+                  return Card(
+                    margin: const EdgeInsets.all(10),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        ListTile(
+                          leading: Image.network(
+                            documentSnapshot["Images"][0],
                           ),
-                        );
-                      }
-                      if (data['Name']
-                          .toString()
-                          .toLowerCase()
-                          .startsWith(searchName.toLowerCase())) {
-                        return Card(
-                          margin: const EdgeInsets.all(10),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              ListTile(
-                                leading: Image.network(
-                                  data['Images'][0],
-                                ),
-                                title: Text(data['Name']),
-                                subtitle: Text(data['Address']),
-                                onTap: () {
-                                  name = data['Name'];
-                                  address = data['Address'];
-                                  imageURL = data['Images'][0];
-                                  rating = data['Ratings'];
-                                  hours = data['Hours'];
-                                  parking = data['Parking'];
-                                  reviews = data['Reviews'];
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            RestaurantDetailScreen()),
-                                  );
-                                },
-                              ),
-                            ],
+                          title: Text(documentSnapshot["Name"]),
+                          subtitle: Text(documentSnapshot["Address"]),
+                          onTap: () {
+                            name = documentSnapshot["Name"];
+                            address = documentSnapshot["Address"];
+                            imageURL = documentSnapshot["Images"][0];
+                            rating = documentSnapshot["Ratings"];
+                            hours = documentSnapshot["Hours"];
+                            parking = documentSnapshot["Parking"];
+                            review = documentSnapshot["Reviews"][0];
+                            reviews = documentSnapshot["Reviews"];
+                            doc_id = documentSnapshot.id;
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      RestaurantDetailScreen()),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                if (documentSnapshot['Name']
+                    .toString()
+                    .toLowerCase()
+                    .startsWith(searchName.toLowerCase())) {
+                  return Card(
+                    margin: const EdgeInsets.all(10),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        ListTile(
+                          leading: Image.network(
+                            documentSnapshot["Images"][0],
                           ),
-                        );
-                      }
-                      return Container();
-                    });
-          },
-        ));
+                          title: Text(documentSnapshot["Name"]),
+                          subtitle: Text(documentSnapshot["Address"]),
+                          onTap: () {
+                            name = documentSnapshot["Name"];
+                            address = documentSnapshot["Address"];
+                            imageURL = documentSnapshot["Images"][0];
+                            rating = documentSnapshot["Ratings"];
+                            hours = documentSnapshot["Hours"];
+                            parking = documentSnapshot["Parking"];
+                            review = documentSnapshot["Reviews"][0];
+                            reviews = documentSnapshot["Reviews"];
+                            doc_id = documentSnapshot.id;
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      RestaurantDetailScreen()),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return Column();
+              },
+            );
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      ),
+    );
   }
 }
 
@@ -322,32 +331,34 @@ class ReviewScreen extends StatelessWidget {
               border: OutlineInputBorder(),
             ),
           ),
+          Container(
+            alignment: Alignment.center,
+            child: 
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    elevation: 2, backgroundColor: genericButtonColor),
+                onPressed: () {
+                  addReview(textController.text, context);
+                },
+                child: Text(
+                  'Done',
+                ),
+              ),
+          )
         ],
       )),
-      floatingActionButton: Container(
-        alignment: Alignment.center,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              elevation: 2, backgroundColor: genericButtonColor),
-          onPressed: () {
-            addReview(textController.text);
-          },
-          child: Text('Done'),
-        ),
-      ),
     );
   }
 }
 
-Future<void> addReview(String review) {
+Future<void> addReview(String review, dynamic context) {
   FirebaseFirestore db = FirebaseFirestore.instance;
-  final cafes = db.collection("CafeName");
-
-  List<String> reviews = [];
-  reviews.add(review);
-  return cafes
+  final restaurantDatabase = db.collection("RestaurantName");
+  List<String> reviewList = [];
+  reviewList.add(review);
+  return restaurantDatabase
       .doc(doc_id)
-      .update({'Reviews': FieldValue.arrayUnion(reviews)})
-      .then((value) => print("Review has been added"))
+      .update({'Reviews': FieldValue.arrayUnion(reviewList)})
+      .then((value) => Navigator.pop(context))
       .catchError((error) => print("Failed to add review: $error"));
 }
