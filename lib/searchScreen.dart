@@ -24,7 +24,7 @@ List<dynamic> reviews = [];
 
 class _SearchScreenState extends State<SearchScreen> {
   final Stream<QuerySnapshot<Map<String, dynamic>>> _restaurants =
-      FirebaseFirestore.instance.collection('RestaurantName').snapshots();
+      FirebaseFirestore.instance.collection('RestaurantName').orderBy("Name").snapshots();
 
   @override
   Widget build(BuildContext context) {
