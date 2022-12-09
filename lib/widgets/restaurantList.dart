@@ -293,17 +293,16 @@ class ReviewScreen extends StatelessWidget {
           ),
           Container(
             alignment: Alignment.center,
-            child: 
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    elevation: 2, backgroundColor: genericButtonColor),
-                onPressed: () {
-                  addReview(textController.text, context);
-                },
-                child: Text(
-                  'Done',
-                ),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  elevation: 2, backgroundColor: genericButtonColor),
+              onPressed: () {
+                addReview(textController.text, context);
+              },
+              child: Text(
+                'Done',
               ),
+            ),
           )
         ],
       )),
@@ -319,7 +318,7 @@ Future<void> addReview(String review, dynamic context) {
   return restaurantDatabase
       .doc(doc_id)
       .update({'Reviews': FieldValue.arrayUnion(reviewList)})
-      .then((value) => Navigator.push(context, MaterialPageRoute(builder: (context) =>  RestaurantDetailScreen())))
+      .then((value) => Navigator.push(context,
+          MaterialPageRoute(builder: (context) => RestaurantDetailScreen())))
       .catchError((error) => print("Failed to add review: $error"));
 }
-
