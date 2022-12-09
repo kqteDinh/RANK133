@@ -19,6 +19,7 @@ String imageURL = "";
 String hours = "";
 String parking = "";
 String review = "";
+String doc_id = "";
 List<dynamic> reviews = [];
 
 class _SearchScreenState extends State<SearchScreen> {
@@ -74,6 +75,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   hours = data['Hours'];
                                   parking = data['Parking'];
                                   reviews = data['Reviews'];
+                                  // doc_id = data.id;
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -133,6 +135,9 @@ class RestaurantDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: iconsColor,
+        ),
         backgroundColor: genericAppBarColor,
         title: Text(
           name,
@@ -148,13 +153,14 @@ class RestaurantDetailScreen extends StatelessWidget {
             imageURL,
             height: 350,
             width: 400,
+            // width: double.infinity,
             fit: BoxFit.fill,
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.only(bottom: 5),
+                padding: const EdgeInsets.only(bottom: 10),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -194,17 +200,36 @@ class RestaurantDetailScreen extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 5),
               ),
               Container(
-                alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.only(left: 10.0),
-                child: Text(
-                  "Reviews",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
+                  alignment: Alignment.centerLeft,
+                  margin: const EdgeInsets.only(left: 10.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        "Reviews",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        width: 30,
+                        height: 30,
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            elevation: 2, backgroundColor: genericButtonColor),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ReviewScreen()),
+                          );
+                        },
+                        child: Text('Add Review'),
+                      )
+                    ],
+                  )),
               Container(
                 color: screenBackgroundColor,
-                child: Column(
+                child: Wrap(
                   children: _getReviews(reviews),
                 ),
               ),
@@ -214,32 +239,35 @@ class RestaurantDetailScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  List<Widget> _getNumberOfStars(int rating) {
-    List<Widget> stars = <Widget>[];
-    int numOfEmptyStars = 5 - rating;
-    stars.add(
-      SizedBox(width: 10),
-    );
-    for (int i = 0; i < rating; i++) {
-      stars.add(Icon(
-        Icons.star,
-        color: iconsColor,
-      ));
-    }
-    for (int i = 0; i < numOfEmptyStars; i++) {
-      stars.add(Icon(
-        Icons.star_border,
-        color: iconsColor,
-      ));
-    }
-    return stars;
+List<Widget> _getNumberOfStars(int rating) {
+  List<Widget> stars = <Widget>[];
+  int numOfEmptyStars = 5 - rating;
+  stars.add(
+    SizedBox(width: 10),
+  );
+  for (int i = 0; i < rating; i++) {
+    stars.add(Icon(
+      Icons.star,
+      color: iconsColor,
+    ));
   }
+  for (int i = 0; i < numOfEmptyStars; i++) {
+    stars.add(Icon(
+      Icons.star_border,
+      color: iconsColor,
+    ));
+  }
+  return stars;
+}
 
-  List<Widget> _getReviews(List<dynamic> list) {
-    List<Widget> reviews = <Widget>[];
-
-    for (int i = 0; i < list.length; i++) {
+List<Widget> _getReviews(List<dynamic> list) {
+  List<Widget> reviews = <Widget>[];
+  int count = 0;
+  for (int i = list.length - 1; i > 0; i--) {
+    count++;
+    if (count < 3) {
       reviews.add(Card(
           margin: const EdgeInsets.all(10),
           child: Column(
@@ -251,6 +279,75 @@ class RestaurantDetailScreen extends StatelessWidget {
             ],
           )));
     }
-    return reviews;
   }
+  return reviews;
+}
+
+class ReviewScreen extends StatelessWidget {
+  TextEditingController textController = TextEditingController();
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    textController.dispose();
+  }
+
+  RegExp digitValidator = RegExp("[0-9]+");
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: iconsColor,
+        ),
+        backgroundColor: genericAppBarColor,
+        title: Text(
+          name,
+          style: TextStyle(
+            color: Colors.black54,
+          ),
+        ),
+      ),
+      body: SizedBox(
+          child: Wrap(
+        children: [
+          SizedBox(
+            height: 10,
+            width: 100,
+          ),
+          TextField(
+            controller: textController,
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            decoration: InputDecoration(
+              labelText: 'Enter your Review',
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ],
+      )),
+      floatingActionButton: Container(
+        alignment: Alignment.center,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              elevation: 2, backgroundColor: genericButtonColor),
+          onPressed: () {
+            addReview(textController.text);
+          },
+          child: Text('Done'),
+        ),
+      ),
+    );
+  }
+}
+
+Future<void> addReview(String review) {
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  final cafes = db.collection("CafeName");
+
+  List<String> reviews = [];
+  reviews.add(review);
+  return cafes
+      .doc(doc_id)
+      .update({'Reviews': FieldValue.arrayUnion(reviews)})
+      .then((value) => print("Review has been added"))
+      .catchError((error) => print("Failed to add review: $error"));
 }
