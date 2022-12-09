@@ -291,29 +291,35 @@ class ReviewScreen extends StatelessWidget {
               border: OutlineInputBorder(),
             ),
           ),
+          Container(
+            alignment: Alignment.center,
+            child: 
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    elevation: 2, backgroundColor: genericButtonColor),
+                onPressed: () {
+                  addReview(textController.text, context);
+                },
+                child: Text(
+                  'Done',
+                ),
+              ),
+          )
         ],
       )),
-      floatingActionButton: Container(
-        alignment: Alignment.center,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              elevation: 2, backgroundColor: genericButtonColor),
-          onPressed: () {
-            addReview(textController.text);
-          },
-          child: Text('Done'),
-        ),
-      ),
     );
   }
 }
 
-Future<void> addReview(String review) {
-  List<String> reviews = [];
-  reviews.add(review);
+Future<void> addReview(String review, dynamic context) {
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  final restaurantDatabase = db.collection("RestaurantName");
+  List<String> reviewList = [];
+  reviewList.add(review);
   return restaurantDatabase
       .doc(doc_id)
-      .update({'Reviews': FieldValue.arrayUnion(reviews)})
-      .then((value) => print("Review has been added"))
+      .update({'Reviews': FieldValue.arrayUnion(reviewList)})
+      .then((value) => Navigator.push(context, MaterialPageRoute(builder: (context) =>  RestaurantDetailScreen())))
       .catchError((error) => print("Failed to add review: $error"));
 }
+
