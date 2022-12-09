@@ -44,7 +44,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             )),
         body: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection('CafeName').snapshots(),
+          stream: FirebaseFirestore.instance.collection('RestaurantName').snapshots(),
           builder: (context, snapshots) {
             return (snapshots.connectionState == ConnectionState.waiting)
                 ? Center(

@@ -15,7 +15,7 @@ class RestaurantList extends StatefulWidget {
 }
 
 FirebaseFirestore db = FirebaseFirestore.instance;
-final cafes = db.collection("CafeName");
+final restaurantDatabase = db.collection("RestaurantName");
 String name = "";
 String address = "";
 int rating = 0;
@@ -69,14 +69,14 @@ List<Widget> _getReviews(List<dynamic> list) {
 }
 
 class _RestaurantListState extends State<RestaurantList> {
-  final Stream<QuerySnapshot<Map<String, dynamic>>> _cafes =
-      FirebaseFirestore.instance.collection('CafeName').snapshots();
+  // final Stream<QuerySnapshot<Map<String, dynamic>>> _cafes =
+  //     FirebaseFirestore.instance.collection('CafeName').snapshots();
   final Stream<QuerySnapshot<Map<String, dynamic>>> _restaurants =
       FirebaseFirestore.instance.collection('RestaurantName').snapshots();
 
-  Stream<QuerySnapshot> getData() {
-    return MergeStream([_cafes, _restaurants]);
-  }
+  // Stream<QuerySnapshot> getData() {
+  //   return MergeStream([_cafes, _restaurants]);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +85,7 @@ class _RestaurantListState extends State<RestaurantList> {
     return Scaffold(
       backgroundColor: screenBackgroundColor,
       body: StreamBuilder(
-        stream: _cafes,
+        stream: _restaurants,
         builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
           if (streamSnapshot.hasData) {
             return ListView.builder(
@@ -311,7 +311,7 @@ class ReviewScreen extends StatelessWidget {
 Future<void> addReview(String review) {
   List<String> reviews = [];
   reviews.add(review);
-  return cafes
+  return restaurantDatabase
       .doc(doc_id)
       .update({'Reviews': FieldValue.arrayUnion(reviews)})
       .then((value) => print("Review has been added"))
