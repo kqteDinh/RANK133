@@ -203,12 +203,43 @@ class RestaurantDetailScreen extends StatelessWidget {
       appBar: AppBar(
         actions: [
           IconButton(
-            icon: Icon(Icons.favorite_border),
-            onPressed:(() {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('The food place has been added to your favorites.')));
-            }
+            icon: FutureBuilder(
+              future: _getUser(auth.currentUser!.uid),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Icon(Icons.favorite_border);
+                }
+                if (snapshot.data != null) {
+                  DocumentSnapshot user = snapshot.data as DocumentSnapshot;
+                  List favs = user.get("Favorites");
+                  if(favs.contains(doc_id)){
+                    return Icon(Icons.favorite, color: Colors.pink,);
+                  }
+                  else return Icon(Icons.favorite_border);
+                }
+                else{
+                  return Icon(Icons.favorite_border);
+                }
+              },
             ),
+            onPressed: () async{
+              DocumentSnapshot user = await usersDatabase.doc(auth.currentUser!.uid).get();
+              DocumentSnapshot rest = await restaurantDatabase.doc(doc_id).get();
+              List favs = user.get("Favorites");
+              int favCount = rest.get("FavCount") ?? 0;
+              if(favs.contains(doc_id)){
+                favs.remove(doc_id);
+                favCount--;
+                if(favCount<0) favCount=0;
+              }
+              else{
+                favs.add(doc_id);
+                favCount++;
+              }
+              usersDatabase.doc(auth.currentUser!.uid).set({"Favorites": favs});
+              restaurantDatabase.doc(doc_id).set({"FavCount": favCount}, SetOptions(merge: true));
+              (context as Element).markNeedsBuild();
+            }
           ),
         ],
         backgroundColor: genericAppBarColor,
