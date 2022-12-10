@@ -52,9 +52,9 @@ List<Widget> _getNumberOfStars(int rating) {
 List<Widget> _getReviews(List<dynamic> list) {
   List<Widget> reviews = <Widget>[];
   int count = 0;
-  for (int i = list.length - 1; i > 0; i--) {
+  for (int i = list.length - 1; i >= 0; i--) {
     count++;
-    if (count < 3) {
+    // if (count < 3) {
       reviews.add(Card(
           margin: const EdgeInsets.all(10),
           child: Column(
@@ -65,7 +65,7 @@ List<Widget> _getReviews(List<dynamic> list) {
               ),
             ],
           )));
-    }
+    // }
   }
   return reviews;
 }
@@ -223,96 +223,98 @@ class RestaurantDetailScreen extends StatelessWidget {
         ),
         automaticallyImplyLeading: true,
       ),
-      body: Column(
-        children: [
-          Image.network(
-            imageURL,
-            height: 350,
-            width: 400,
-            // width: double.infinity,
-            fit: BoxFit.fill,
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: _getNumberOfStars(rating),
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.only(left: 10.0),
-                child: Text(
-                  address,
-                  textAlign: TextAlign.left,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Image.network(
+              imageURL,
+              height: 350,
+              width: 400,
+              // width: double.infinity,
+              fit: BoxFit.fill,
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 5),
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.only(left: 10.0),
-                child: Text(
-                  "Opening Hours: " + hours,
-                  textAlign: TextAlign.left,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: _getNumberOfStars(rating),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 5),
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.only(left: 10.0),
-                child: Text(
-                  "Parking Type: " + parking,
-                  textAlign: TextAlign.left,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 5),
-              ),
-              Container(
+                Container(
                   alignment: Alignment.centerLeft,
                   margin: const EdgeInsets.only(left: 10.0),
-                  child: Row(
-                    children: [
-                      Text(
-                        "Reviews",
-                        textAlign: TextAlign.left,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        width: 30,
-                        height: 30,
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            elevation: 2, backgroundColor: genericButtonColor),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ReviewScreen()),
-                          );
-                        },
-                        child: Text('Add Review'),
-                      )
-                    ],
-                  )),
-              Container(
-                color: screenBackgroundColor,
-                child: Wrap(
-                  children: _getReviews(reviews),
+                  child: Text(
+                    address,
+                    textAlign: TextAlign.left,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
-      ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 5),
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  margin: const EdgeInsets.only(left: 10.0),
+                  child: Text(
+                    "Opening Hours: " + hours,
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 5),
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  margin: const EdgeInsets.only(left: 10.0),
+                  child: Text(
+                    "Parking Type: " + parking,
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 5),
+                ),
+                Container(
+                    alignment: Alignment.centerLeft,
+                    margin: const EdgeInsets.only(left: 10.0),
+                    child: Row(
+                      children: [
+                        Text(
+                          "Reviews",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(
+                          width: 30,
+                          height: 30,
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              elevation: 2, backgroundColor: genericButtonColor),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ReviewScreen()),
+                            );
+                          },
+                          child: Text('Add Review'),
+                        )
+                      ],
+                    )),
+                Container(
+                  color: screenBackgroundColor,
+                  child: Wrap(
+                    children: _getReviews(reviews),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      )
     );
   }
 }
