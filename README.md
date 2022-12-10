@@ -11,8 +11,8 @@ This is a mobile application designed and created by SJSU students to display re
 
 ## Technologies
 This project is created with: 
-* Flutter version ___
-* Dart version ___
+* Flutter version 3.3.4
+* Dart version 2.18.2
 * Firebase 
 
 ## Features
