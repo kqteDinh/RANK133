@@ -199,6 +199,9 @@ class FavoritesList extends StatelessWidget{
   
 }
 
+Future<DocumentSnapshot> _getUser(String id) {
+  return usersDatabase.doc(auth.currentUser!.uid).get();
+}
 
 class FavoriteDetailScreen extends StatelessWidget {
 
@@ -218,6 +221,47 @@ class FavoriteDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: FutureBuilder(
+              future: _getUser(auth.currentUser!.uid),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Icon(Icons.favorite_border);
+                }
+                if (snapshot.data != null) {
+                  DocumentSnapshot user = snapshot.data as DocumentSnapshot;
+                  List favs = user.get("Favorites");
+                  if(favs.contains(doc_id)){
+                    return Icon(Icons.favorite, color: Colors.pink,);
+                  }
+                  else return Icon(Icons.favorite_border);
+                }
+                else{
+                  return Icon(Icons.favorite_border);
+                }
+              },
+            ),
+            onPressed: () async{
+              DocumentSnapshot user = await usersDatabase.doc(auth.currentUser!.uid).get();
+              DocumentSnapshot rest = await restaurantDatabase.doc(doc_id).get();
+              List favs = user.get("Favorites");
+              int favCount = rest.get("FavCount") ?? 0;
+              if(favs.contains(doc_id)){
+                favs.remove(doc_id);
+                favCount--;
+                if(favCount<0) favCount=0;
+              }
+              else{
+                favs.add(doc_id);
+                favCount++;
+              }
+              usersDatabase.doc(auth.currentUser!.uid).set({"Favorites": favs});
+              restaurantDatabase.doc(doc_id).set({"FavCount": favCount}, SetOptions(merge: true));
+              (context as Element).markNeedsBuild();
+            }
+          ),
+        ],
         backgroundColor: genericAppBarColor,
         iconTheme: IconThemeData(
           color: iconsColor,
@@ -230,96 +274,98 @@ class FavoriteDetailScreen extends StatelessWidget {
         ),
         automaticallyImplyLeading: true,
       ),
-      body: Column(
-        children: [
-          Image.network(
-            imageURL,
-            height: 350,
-            width: 400,
-            // width: double.infinity,
-            fit: BoxFit.fill,
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: _getNumberOfStars(rating),
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.only(left: 10.0),
-                child: Text(
-                  address,
-                  textAlign: TextAlign.left,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Image.network(
+              imageURL,
+              height: 350,
+              width: 400,
+              // width: double.infinity,
+              fit: BoxFit.fill,
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 5),
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.only(left: 10.0),
-                child: Text(
-                  "Opening Hours: " + hours,
-                  textAlign: TextAlign.left,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: _getNumberOfStars(rating),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 5),
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.only(left: 10.0),
-                child: Text(
-                  "Parking Type: " + parking,
-                  textAlign: TextAlign.left,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 5),
-              ),
-              Container(
+                Container(
                   alignment: Alignment.centerLeft,
                   margin: const EdgeInsets.only(left: 10.0),
-                  child: Row(
-                    children: [
-                      Text(
-                        "Reviews",
-                        textAlign: TextAlign.left,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        width: 30,
-                        height: 30,
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            elevation: 2, backgroundColor: genericButtonColor),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ReviewScreen()),
-                          );
-                        },
-                        child: Text('Add Review'),
-                      )
-                    ],
-                  )),
-              Container(
-                color: screenBackgroundColor,
-                child: Wrap(
-                  children: _getReviews(reviews),
+                  child: Text(
+                    address,
+                    textAlign: TextAlign.left,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
-      ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 5),
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  margin: const EdgeInsets.only(left: 10.0),
+                  child: Text(
+                    "Opening Hours: " + hours,
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 5),
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  margin: const EdgeInsets.only(left: 10.0),
+                  child: Text(
+                    "Parking Type: " + parking,
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 5),
+                ),
+                Container(
+                    alignment: Alignment.centerLeft,
+                    margin: const EdgeInsets.only(left: 10.0),
+                    child: Row(
+                      children: [
+                        Text(
+                          "Reviews",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(
+                          width: 30,
+                          height: 30,
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              elevation: 2, backgroundColor: genericButtonColor),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ReviewScreen()),
+                            );
+                          },
+                          child: Text('Add Review'),
+                        )
+                      ],
+                    )),
+                Container(
+                  color: screenBackgroundColor,
+                  child: Wrap(
+                    children: _getReviews(reviews),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      )
     );
   }
 }
