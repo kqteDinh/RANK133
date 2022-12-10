@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rank133/Colors/appColors.dart';
-import 'package:rank133/widgets/restaurantList.dart';
+import 'package:rank133/profileEditScreen.dart';
+import 'package:rank133/searchScreen.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const routeName = '/profile';
@@ -17,7 +18,7 @@ FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore db = FirebaseFirestore.instance;
 final restaurantDatabase = db.collection("RestaurantName");
 final usersDatabase = db.collection("users");
-
+late final favs;
 class _ProfileScreenState extends State<ProfileScreen> {
 
   String name = auth.currentUser!.displayName ?? "No Name";
@@ -49,9 +50,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: CircleAvatar(
                 radius: 120,
-                // backgroundImage: AssetImage("assets/Image/Paspotr.jpg"),
+                foregroundImage: NetworkImage(auth.currentUser!.photoURL ?? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
               ),
             ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(elevation: 2, backgroundColor: genericButtonColor),
+              onPressed: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ProfileEditScreen()),
+                );
+                setState(() {});
+                // (context as Element).markNeedsBuild();
+              }, 
+              child: Text("Edit Profile Picture")),
             SizedBox(height: 20),
             Text(
               name,
@@ -78,8 +92,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     title: Text("Favorites"),
                     onTap: () async {
-                      DocumentSnapshot userDoc = await usersDatabase.doc(auth.currentUser!.uid).get();
-                      final favs = userDoc.get("Favorites");
+                      DocumentSnapshot userDoc = await usersDatabase.doc(auth.currentUser!.uid).get().catchError((error){print(error);});
+                      favs = userDoc.get("Favorites");
                       if(favs.length == 0){
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text("You have not added any favorites"),
@@ -128,7 +142,6 @@ class FavoritesList extends StatelessWidget{
   FavoritesList(favs){
     _favs = favs;
     _favorites = FirebaseFirestore.instance.collection('RestaurantName').where("__name__", whereIn: _favs).snapshots();
-    print(_favorites);
   }
 
 
@@ -174,7 +187,7 @@ class FavoritesList extends StatelessWidget{
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => FavoriteDetailScreen(documentSnapshot['Name'], documentSnapshot['Images'][0], documentSnapshot['Address'], documentSnapshot['Parking'], documentSnapshot['Hours'], documentSnapshot['Reviews'], documentSnapshot['Ratings'])),
+                                builder: (context) => FavoriteDetailScreen(documentSnapshot['Name'], documentSnapshot['Images'][0], documentSnapshot['Address'], documentSnapshot['Parking'], documentSnapshot['Hours'], documentSnapshot['Reviews'], documentSnapshot['Ratings'], documentSnapshot.id)),
                           );
                         },
                       ),
@@ -205,9 +218,9 @@ Future<DocumentSnapshot> _getUser(String id) {
 
 class FavoriteDetailScreen extends StatelessWidget {
 
-  var name, imageURL, address, parking, hours, reviews, rating;
+  var name, imageURL, address, parking, hours, reviews, rating, doc_id;
 
-  FavoriteDetailScreen(name, imageURL, address, parking, hours, reviews, rating){
+  FavoriteDetailScreen(name, imageURL, address, parking, hours, reviews, rating, doc_id){
     this.name = name;
     this.imageURL = imageURL;
     this.address = address;
@@ -215,6 +228,7 @@ class FavoriteDetailScreen extends StatelessWidget {
     this.hours = hours;
     this.reviews = reviews;
     this.rating = rating;
+    this.doc_id = doc_id;
   }
 
   @override
@@ -348,7 +362,7 @@ class FavoriteDetailScreen extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ReviewScreen()),
+                                  builder: (context) => ReviewScreen(name, doc_id)),
                             );
                           },
                           child: Text('Add Review'),
@@ -410,4 +424,82 @@ List<Widget> _getReviews(List<dynamic> list) {
     }
   }
   return reviews;
+}
+
+class ReviewScreen extends StatelessWidget {
+  TextEditingController textController = TextEditingController();
+  
+  var name, doc_id;
+  ReviewScreen(name, doc_id){
+    this.name = name;
+    this.doc_id = doc_id;
+  }
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    textController.dispose();
+  }
+
+  RegExp digitValidator = RegExp("[0-9]+");
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: iconsColor,
+        ),
+        backgroundColor: genericAppBarColor,
+        title: Text(
+          name,
+          style: TextStyle(
+            color: Colors.black54,
+          ),
+        ),
+      ),
+      body: SizedBox(
+          child: Wrap(
+        children: [
+          SizedBox(
+            height: 10,
+            width: 100,
+          ),
+          TextField(
+            controller: textController,
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            decoration: InputDecoration(
+              labelText: 'Enter your Review',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          Container(
+            alignment: Alignment.center,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  elevation: 2, backgroundColor: genericButtonColor),
+              onPressed: () async {
+                addReview(textController.text, context, doc_id);
+              },
+              child: Text(
+                'Done',
+              ),
+            ),
+          )
+        ],
+      )),
+    );
+  }
+}
+
+Future<void> addReview(String review, dynamic context, String doc_id) {
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  final restaurantDatabase = db.collection("RestaurantName");
+  List<String> reviewList = [];
+  reviewList.add(review);
+  return restaurantDatabase
+      .doc(doc_id)
+      .update({'Reviews': FieldValue.arrayUnion(reviewList)})
+      .then((value) => Navigator.pop(context,
+          MaterialPageRoute(builder: (context) => FavoritesList(favs))))
+      .catchError((error) => print("Failed to add review: $error"));
+      
 }
