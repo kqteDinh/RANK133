@@ -70,13 +70,6 @@ List<Widget> _getReviews(List<dynamic> list) {
   return reviews;
 }
 
-_updateFavs(String id) async {
-  DocumentSnapshot user = await usersDatabase.doc(auth.currentUser!.uid).get();
-  List favs = user.get("Favorites");
-  if(favs.contains(id)) favs.remove(id);
-  else favs.add(id);
-  usersDatabase.doc(auth.currentUser!.uid).set({"Favorites": favs});
-}
 
 Future<DocumentSnapshot> _getUser(String id) {
   return usersDatabase.doc(auth.currentUser!.uid).get();
@@ -118,36 +111,52 @@ class _RestaurantListState extends State<RestaurantList> {
                         ),
                         title: Text(documentSnapshot["Name"]),
                         subtitle: Text(documentSnapshot["Address"]),
-                        trailing: IconButton(
-                          icon: FutureBuilder(
-                            future: _getUser(auth.currentUser!.uid),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return Icon(Icons.favorite_border);
-                              }
-                              if (snapshot.data != null) {
-                                DocumentSnapshot user = snapshot.data as DocumentSnapshot;
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          // direction: Axis.horizontal,
+                          children: [
+                            Text(documentSnapshot["FavCount"].toString()),
+                            IconButton(
+                              icon: FutureBuilder(
+                                future: _getUser(auth.currentUser!.uid),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return Icon(Icons.favorite_border);
+                                  }
+                                  if (snapshot.data != null) {
+                                    DocumentSnapshot user = snapshot.data as DocumentSnapshot;
+                                    List favs = user.get("Favorites");
+                                    if(favs.contains(documentSnapshot.id)){
+                                      return Icon(Icons.favorite, color: Colors.pink,);
+                                    }
+                                    else return Icon(Icons.favorite_border);
+                                  }
+                                  else{
+                                    return Icon(Icons.favorite_border);
+                                  }
+                                },
+                              ),
+                              onPressed: () async{
+                                DocumentSnapshot user = await usersDatabase.doc(auth.currentUser!.uid).get();
                                 List favs = user.get("Favorites");
+                                int favCount = documentSnapshot.get("FavCount") ?? 0;
                                 if(favs.contains(documentSnapshot.id)){
-                                  return Icon(Icons.favorite, color: Colors.pink,);
+                                  favs.remove(documentSnapshot.id);
+                                  favCount--;
+                                  if(favCount<0) favCount=0;
                                 }
-                                else return Icon(Icons.favorite_border);
+                                else{
+                                  favs.add(documentSnapshot.id);
+                                  favCount++;
+                                }
+                                usersDatabase.doc(auth.currentUser!.uid).set({"Favorites": favs});
+                                restaurantDatabase.doc(documentSnapshot.id).set({"FavCount": favCount}, SetOptions(merge: true));
+                                setState(() {
+                                  // Call setState to refresh the page.
+                                });
                               }
-                              else{
-                                return Icon(Icons.favorite_border);
-                              }
-                            },
-                          ),
-                          onPressed: () async{
-                            DocumentSnapshot user = await usersDatabase.doc(auth.currentUser!.uid).get();
-                            List favs = user.get("Favorites");
-                            if(favs.contains(documentSnapshot.id)) favs.remove(documentSnapshot.id);
-                            else favs.add(documentSnapshot.id);
-                            usersDatabase.doc(auth.currentUser!.uid).set({"Favorites": favs});
-                            setState(() {
-                              // Call setState to refresh the page.
-                            });
-                          }
+                            ),
+                          ],
                         ),
                         onTap: () {
                           name = documentSnapshot["Name"];
