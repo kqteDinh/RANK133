@@ -13,7 +13,7 @@ This is a mobile application designed and created by SJSU students to display re
 This project is created with: 
 * Flutter version 3.3.4
 * Dart version 2.18.2
-* Firebase 
+* Firebase https://console.firebase.google.com/u/0/project/rankcmpe133/overview
 
 ## Features
 - __Sign up:__ Users can create an account by using an email and creating a password
