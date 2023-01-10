@@ -5,6 +5,7 @@ Contributors: Kate Dinh, Angeli Faith Deanon, Rohan Ohlan, Nicholas Bao
 * [General info](#general-info)
 * [Technologies](#technologies)
 * [Features](#features)
+* [Project Demo Video](#project-demo)
 
 ## General Info
 This is a mobile application designed and created by SJSU students to display restaurants and cafes nearby SJSU campus. Users of this app are also given the chance to publicly review these restuarants and cafes.
@@ -22,5 +23,8 @@ This project is created with:
 - __Search:__ Users can search for certain restuarants or cafes through the search bar
 - __Review:__ Users can leave reviews on all available restaurants and cafes publicly
 - __Favortie:__ Users can favorite places they would like to upvote and save
+
+## Project Demo Video
+https://www.youtube.com/watch?v=R4xTu1AgKMM
 
 Last Updated: 12/10/2022
